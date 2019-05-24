@@ -102,6 +102,8 @@ public:
 	
 	// Register 1
 	void enableChannels(bool right, bool left);
+	bool rightEnabled();
+	bool leftEnabled();
 	void softwareShutdown(bool shutdown);
 	void resetShort(bool right, bool left);
 	bool rightShorted();

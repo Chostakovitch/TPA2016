@@ -54,7 +54,24 @@ uint8_t I2C_TPA2016::readI2C(uint8_t regAddress) {
 }
 
 void I2C_TPA2016::enableChannels(bool right, bool left) {
-	
+	uint8_t setup = readI2C(TPA2016_SETUP);
+	if(right)
+		setup |= TPA2016_SETUP_R_EN;
+	else
+		setup &= ~TPA2016_SETUP_R_EN;
+	if(left)
+		setup |= TPA2016_SETUP_L_EN;
+	else
+		setup &= ~TPA2016_SETUP_L_EN;
+	writeI2C(TPA2016_SETUP, setup);
+}
+
+bool I2C_TPA2016::rightEnabled() {
+	return readI2C(TPA2016_SETUP) && TPA2016_SETUP_R_EN;
+}
+
+bool I2C_TPA2016::leftEnabled() {
+	return readI2C(TPA2016_SETUP) && TPA2016_SETUP_L_EN;
 }
 
 void I2C_TPA2016::softwareShutdown(bool shutdown) {
