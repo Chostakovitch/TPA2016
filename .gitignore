@@ -1,5 +1,6 @@
 build/
 TPA2016
 tests/*
+settings.json
 !tests/catch.cpp
 !tests/tpa.cpp

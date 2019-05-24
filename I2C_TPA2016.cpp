@@ -67,11 +67,11 @@ void I2C_TPA2016::enableChannels(bool right, bool left) {
 }
 
 bool I2C_TPA2016::rightEnabled() {
-	return readI2C(TPA2016_SETUP) && TPA2016_SETUP_R_EN;
+	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_R_EN;
 }
 
 bool I2C_TPA2016::leftEnabled() {
-	return readI2C(TPA2016_SETUP) && TPA2016_SETUP_L_EN;
+	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_L_EN;
 }
 
 void I2C_TPA2016::softwareShutdown(bool shutdown) {
