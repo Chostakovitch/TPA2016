@@ -1,0 +1,176 @@
+#include "I2C_TPA2016.h"
+
+I2C_TPA2016::I2C_TPA2016(uint8_t bus, uint8_t address) {
+	this->bus = bus;
+	this->address = address;
+	int code;
+	
+	// Open I2C device
+	if((code = initI2C_RW(bus, address, 0)) != 0) {
+		throw std::runtime_error("Unable to initialize I2C");
+	}
+	
+	/* Check if all features used by this code are available, here : 
+		- Reading and writing bytes
+		- Combined read/write transaction without stop in between (used by i2c_smbus_read_byte_data).
+	* See https://www.kernel.org/doc/Documentation/i2c/functionality for details */
+	uint64_t availableFuncs;
+	if (ioctl(i2C_file, I2C_FUNCS, &availableFuncs) < 0) {
+		throw std::runtime_error("Unable to check I2C adapter functionalities");
+	}
+	
+	if (!(availableFuncs & (I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_I2C))) {
+		throw std::runtime_error("Desired functionality is not available");
+	}
+	 
+	// Activate all features of the amplifier
+	softwareShutdown(false);
+}
+
+I2C_TPA2016::~I2C_TPA2016() {
+	// Disable most features
+	softwareShutdown(true);
+	
+	int code;
+	if((code = closeI2C()) != 0) {
+		throw std::runtime_error("Unable to close I2C");
+	}
+}
+
+void I2C_TPA2016::write(uint8_t regAddress, uint8_t value) {
+	if(i2c_smbus_write_byte_data(i2C_file, regAddress, value) < 0)
+	{
+		throw std::runtime_error(strerror(errno));
+	}
+}
+
+uint8_t I2C_TPA2016::read(uint8_t regAddress) {
+	uint8_t res;
+	if((res = i2c_smbus_read_byte_data(i2C_file, regAddress)) < 0)
+	{
+		throw std::runtime_error(strerror(errno));
+	}
+	return res;
+}
+
+void I2C_TPA2016::enableChannels(bool right, bool left) {
+	
+}
+
+void I2C_TPA2016::softwareShutdown(bool shutdown) {
+	
+}
+
+void I2C_TPA2016::resetShort(bool right, bool left) {
+	
+}
+
+bool I2C_TPA2016::rightShorted() {
+	
+}
+
+bool I2C_TPA2016::leftShorted() {
+	
+}
+
+bool I2C_TPA2016::tooHot() {
+	
+}
+
+void I2C_TPA2016::enableNoiseGate(bool noiseGate) {
+	
+}
+
+bool I2C_TPA2016::noiseGateEnabled() {
+	
+}
+
+void I2C_TPA2016::setAttackTime(uint8_t attack) {
+	
+}
+
+uint8_t I2C_TPA2016::attackTime() {
+	
+}
+
+void I2C_TPA2016::setReleaseTime(uint8_t release) {
+	
+}
+
+uint8_t I2C_TPA2016::releaseTime() {
+	
+}
+
+void I2C_TPA2016::setHoldTime(uint8_t hold) {
+	
+}
+
+uint8_t I2C_TPA2016::holdTime() {
+	
+}
+
+void I2C_TPA2016::disableHoldControl() {
+	
+}
+
+bool I2C_TPA2016::holdControlEnabled() {
+	
+}
+
+void I2C_TPA2016::setGain(int8_t gain) {
+	
+}
+
+int8_t I2C_TPA2016::gain() {
+	
+}
+
+void I2C_TPA2016::enableLimiter(bool limiter) {
+	
+}
+
+bool I2C_TPA2016::limiterEnabled() {
+	
+}
+
+void I2C_TPA2016::setLimitLevel(uint8_t limit) {
+	
+}
+
+uint8_t I2C_TPA2016::limitLevel() {
+	
+}
+
+void I2C_TPA2016::setNoiseGateThreshold(uint8_t threshold) {
+	
+}
+
+uint8_t I2C_TPA2016::noiseGateThreshold() {
+	
+}
+
+void I2C_TPA2016::setCompressionRatio(uint8_t x) {
+	
+}
+
+uint8_t I2C_TPA2016::compressionRatio() {
+	
+}
+
+void I2C_TPA2016::setMaxGain(uint8_t x) {
+	
+}
+
+uint8_t I2C_TPA2016::maxGain() {
+	
+}
+
+void I2C_TPA2016::disableAGC() {
+	
+}
+
+
+// We do not provide reading without register adress, as we already have SMBus method to write register adress then read value.
+int I2C_TPA2016::readI2C() {
+	throw std::logic_error("Function not implemented");
+}
