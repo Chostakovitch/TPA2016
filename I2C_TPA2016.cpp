@@ -37,14 +37,14 @@ I2C_TPA2016::~I2C_TPA2016() {
 	}
 }
 
-void I2C_TPA2016::write(uint8_t regAddress, uint8_t value) {
+void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
 	if(i2c_smbus_write_byte_data(i2C_file, regAddress, value) < 0)
 	{
 		throw std::runtime_error(strerror(errno));
 	}
 }
 
-uint8_t I2C_TPA2016::read(uint8_t regAddress) {
+uint8_t I2C_TPA2016::readI2C(uint8_t regAddress) {
 	uint8_t res;
 	if((res = i2c_smbus_read_byte_data(i2C_file, regAddress)) < 0)
 	{
