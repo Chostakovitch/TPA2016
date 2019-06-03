@@ -1,6 +1,6 @@
 ## Dependencies
 * [Catch2](https://github.com/catchorg/Catch2) for testing
-* [Bela platform](bela.io/) or [BeagleBone Black](https://beagleboard.org/black) **with some adaptation** for running
+* [Bela platform](bela.io/) (or [BeagleBone Black](https://beagleboard.org/black) **with some adaptation** for running - will not work as is, especially because of I2C.h dependency)
 
 This lib assume that you know how to open an I2C adapter on Bela. More info to come.
 
@@ -8,7 +8,15 @@ This lib assume that you know how to open an I2C adapter on Bela. More info to c
 
 Just use `build_project.sh` Bela script or open the project in web IDE.
 
+## Usage
+
+This library is made to be very simple to use, *e.g.* if you want to set attack time, just call `setAttackTime(value in ms/6dB)`. Internally, there is a conversion table between the register value and the ms/6dB value, but the library takes care of that. You can nevertheless find those conversion tables in the [TPA2016D2 datasheet](http://www.adafruit.com/datasheets/TPA2016D2.pdf).
+
+If you come from the [original library for Arduino](https://github.com/adafruit/Adafruit-TPA2016-Library), be careful as your code probably need some adaptation. This library assume that you already did the conversion.
+
 ## Launch tests
+
+\# todo write about separation between test of the amp and test of the code
 
 Make sure to compile the main project with `-fPIC` flag. This can be done by passing `CPPFLAGS=-fPIC` to the Makefile in IDE settings.
 

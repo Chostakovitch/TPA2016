@@ -94,6 +94,13 @@ Bits 2 and 3 are unused*/
 // Defaut I2C address
 #define TPA2016_I2CADDR 0x58
 
+// Increment step in ms/6dB value of attack time
+#define TPA2016_ATTACK_STEP 1.28f
+// Increment step in sec/6dB of release time
+#define TPA2016_RELEASE_STEP 0.1644f
+// Increment step in sec/step of hold time
+#define TPA2016_HOLD_STEP 0.0137f
+
 class I2C_TPA2016 : public I2c
 {
 public:
@@ -117,16 +124,16 @@ public:
 	bool noiseGateEnabled();
 
 	// Register 2
-	void setAttackTime(uint8_t attack);
-	uint8_t attackTime();
+	void setAttackTime(float attack);
+	float attackTime();
 
 	// Register 3
-	void setReleaseTime(uint8_t release);
-	uint8_t releaseTime();
+	void setReleaseTime(float release);
+	float releaseTime();
 
 	// Register 4
-	void setHoldTime(uint8_t hold);
-	uint8_t holdTime();
+	void setHoldTime(float hold);
+	float holdTime();
 	void disableHoldControl();
 	bool holdControlEnabled();
 
@@ -155,7 +162,32 @@ private:
 	uint8_t bus;
 	uint8_t address;
 	int readI2C();
+	/**
+	 * Small helper to avoid code duplication.
+	 * Are there is a lot of "toggle-bit" functions which basically does the same thing, modulo register address and bit position, this should replace boilerplate code.
+	 * @param reg    Address of the 8-bit register to write
+	 * @param bit    Bitmask corresponding to "true" for the feature
+	 * @param enable If the feature should be enabled
+	 */
 	void boolWrite(uint8_t reg, uint8_t bit, bool enable);
+	/**
+	 * Apply conversion table specified in datasheet for the attack time
+	 * @param  attackTime Attack time in ms/6dB
+	 * @return            Value for register 2 corresponding to attackTime
+	 */
+	uint8_t convertAttackTime(float attackTime);
+	/**
+	 * Apply conversion table specified in datasheet for the release time
+	 * @param  releaseTime Release time in sec/6dB
+	 * @return             Value for register 3 corresponding to releaseTime
+	 */
+	uint8_t convertReleaseTime(float releaseTime);
+	/**
+	 * Apply conversion table specified in datasheet for the hold time
+	 * @param  releaseTime Hold time in second (per step)
+	 * @return             Value for register 3 correspoding to holdTime
+	 */
+	uint8_t convertHoldTime(float holdTime);
 };
 
 #endif /* I2CTPA2016_H_ */

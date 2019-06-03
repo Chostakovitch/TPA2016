@@ -81,7 +81,7 @@ void I2C_TPA2016::softwareShutdown(bool shutdown) {
 
 bool I2C_TPA2016::ready() {
 	// TPA2016_SETUP_SWS is shutdown enabled, negate to get readiness
-	return !(readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS);
+	return ~(readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS);
 }
 
 void I2C_TPA2016::resetShort(bool right, bool left) {
@@ -109,36 +109,40 @@ bool I2C_TPA2016::noiseGateEnabled() {
   return readI2C(TPA2016_SETUP) & TPA2016_SETUP_NOISEGATE;
 }
 
-void I2C_TPA2016::setAttackTime(uint8_t attack) {
-
+void I2C_TPA2016::setAttackTime(float attack) {
+	writeI2C(TPA2016_ATK, convertAttackTime(attack));
 }
 
-uint8_t I2C_TPA2016::attackTime() {
-	return 0;
+float I2C_TPA2016::attackTime() {
+	// Mask off last two bits and multiply by increment step
+	return (readI2C(TPA2016_ATK) & ~(0xC0)) * TPA2016_ATTACK_STEP;
 }
 
-void I2C_TPA2016::setReleaseTime(uint8_t release) {
-
+void I2C_TPA2016::setReleaseTime(float release) {
+	writeI2C(TPA2016_REL, convertReleaseTime(release));
 }
 
-uint8_t I2C_TPA2016::releaseTime() {
-	return 0;
+float I2C_TPA2016::releaseTime() {
+	// Mask off last two bits and multiply by increment step
+	return (readI2C(TPA2016_REL) & ~(0xC0)) * TPA2016_RELEASE_STEP;
 }
 
-void I2C_TPA2016::setHoldTime(uint8_t hold) {
-
+void I2C_TPA2016::setHoldTime(float hold) {
+	writeI2C(TPA2016_HOLD, convertHoldTime(hold));
 }
 
-uint8_t I2C_TPA2016::holdTime() {
-	return 0;
+float I2C_TPA2016::holdTime() {
+	// Mask off last two bits and multiply by increment step
+	return (readI2C(TPA2016_HOLD) & ~(0xC0)) * TPA2016_HOLD_STEP;
 }
 
 void I2C_TPA2016::disableHoldControl() {
-
+	writeI2C(TPA2016_HOLD, 0);
 }
 
 bool I2C_TPA2016::holdControlEnabled() {
-	return false;
+	// Mask off 2 last bits : if 6 first bits are at 0, hold control is disabled
+	return readI2C(TPA2016_HOLD) & ~(0xC0);
 }
 
 void I2C_TPA2016::setGain(int8_t gain) {
@@ -193,6 +197,27 @@ void I2C_TPA2016::disableAGC() {
 
 }
 
+uint8_t I2C_TPA2016::convertAttackTime(float attackTime) {
+	if(attackTime > 80.66f || attackTime < 1.28f) {
+		throw std::out_of_range("Illegal attack time value");
+	}
+	// The quotient of the division gives us how many TPA2016_ATTACK_STEP are in attackTime, this is the reg value
+	return static_cast<uint8_t>(attackTime / TPA2016_ATTACK_STEP);
+}
+
+uint8_t I2C_TPA2016::convertReleaseTime(float releaseTime) {
+	if(releaseTime > 10.36f || releaseTime < 0.1644f) {
+		throw std::out_of_range("Illegal release time value");
+	}
+	return static_cast<uint8_t>(releaseTime / TPA2016_RELEASE_STEP);
+}
+
+uint8_t I2C_TPA2016::convertHoldTime(float holdTime) {
+	if(holdTime > 0.8631f || holdTime < 0) {
+		throw std::out_of_range("Illegal hold time value");
+	}
+	return static_cast<uint8_t>(holdTime / TPA2016_HOLD_STEP);
+}
 
 // We do not provide reading without register adress, as we already have SMBus method to write register adress then read value.
 int I2C_TPA2016::readI2C() {
