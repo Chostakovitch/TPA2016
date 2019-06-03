@@ -65,7 +65,7 @@ SCENARIO("Modification of the registers") {
 				REQUIRE(!tpa.leftEnabled());
 			}
 			tpa.enableChannels(true, true);
-			THEN("Their status change to off") {
+			THEN("Their status change to on") {
 				REQUIRE(tpa.rightEnabled());
 				REQUIRE(tpa.leftEnabled());
 			}
@@ -82,9 +82,9 @@ SCENARIO("Modification of the registers") {
 			tpa.softwareShutdown(true);
 			THEN("Amplifier is not ready anymore") {
 				REQUIRE(!tpa.ready());
-				WHEN("Software shutdown is disable") {
+				WHEN("Software shutdown is disabled") {
 					tpa.softwareShutdown(false);
-					THEN("Amplifier become ready") {
+					THEN("Amplifier becomes ready") {
 						REQUIRE(tpa.ready());
 					}
 				}
@@ -99,8 +99,15 @@ SCENARIO("Modification of the registers") {
 		}
 
 		WHEN("Noise gate is turned on") {
-			THEN("test") {
-
+			tpa.enableNoiseGate(true);
+			THEN("Noise gate is enabled") {
+				REQUIRE(tpa.noiseGateEnabled());
+				WHEN("Noise gate is turned off") {
+					tpa.enableNoiseGate(false);
+					THEN("Noise gate is disabled") {
+						REQUIRE(!tpa.noiseGateEnabled());
+					}
+				}
 			}
 		}
 

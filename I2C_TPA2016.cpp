@@ -56,15 +56,15 @@ uint8_t I2C_TPA2016::readI2C(uint8_t regAddress) {
 void I2C_TPA2016::boolWrite(uint8_t reg, uint8_t bit, bool enable) {
 	uint8_t reg_value = readI2C(reg);
 	if(enable)
-		reg |= bit;
+		reg_value |= bit;
 	else
-		reg &= ~bit;
+		reg_value &= ~bit;
 	writeI2C(reg, reg_value);
 }
 
 void I2C_TPA2016::enableChannels(bool right, bool left) {
 	boolWrite(TPA2016_SETUP, TPA2016_SETUP_R_EN, right);
-	boolWrite(TPA2016_SETUP, TPA2016_SETUP_R_EN, left);
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_L_EN, left);
 }
 
 bool I2C_TPA2016::rightEnabled() {
@@ -80,31 +80,33 @@ void I2C_TPA2016::softwareShutdown(bool shutdown) {
 }
 
 bool I2C_TPA2016::ready() {
-	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS;
+	// TPA2016_SETUP_SWS is shutdown enabled, negate to get readiness
+	return !(readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS);
 }
 
 void I2C_TPA2016::resetShort(bool right, bool left) {
-
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_R_FAULT, right);
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_L_FAULT, left);
 }
 
 bool I2C_TPA2016::rightShorted() {
-	return true;
+	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_R_FAULT;
 }
 
 bool I2C_TPA2016::leftShorted() {
-	return true;
+	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_L_FAULT;
 }
 
 bool I2C_TPA2016::tooHot() {
-	return true;
+	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_THERMAL;
 }
 
 void I2C_TPA2016::enableNoiseGate(bool noiseGate) {
-
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_NOISEGATE, noiseGate);
 }
 
 bool I2C_TPA2016::noiseGateEnabled() {
-		return false;
+  return readI2C(TPA2016_SETUP) & TPA2016_SETUP_NOISEGATE;
 }
 
 void I2C_TPA2016::setAttackTime(uint8_t attack) {
