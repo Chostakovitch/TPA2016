@@ -53,17 +53,18 @@ uint8_t I2C_TPA2016::readI2C(uint8_t regAddress) {
 	return res;
 }
 
+void I2C_TPA2016::boolWrite(uint8_t reg, uint8_t bit, bool enable) {
+	uint8_t reg_value = readI2C(reg);
+	if(enable)
+		reg |= bit;
+	else
+		reg &= ~bit;
+	writeI2C(reg, reg_value);
+}
+
 void I2C_TPA2016::enableChannels(bool right, bool left) {
-	uint8_t setup = readI2C(TPA2016_SETUP);
-	if(right)
-		setup |= TPA2016_SETUP_R_EN;
-	else
-		setup &= ~TPA2016_SETUP_R_EN;
-	if(left)
-		setup |= TPA2016_SETUP_L_EN;
-	else
-		setup &= ~TPA2016_SETUP_L_EN;
-	writeI2C(TPA2016_SETUP, setup);
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_R_EN, right);
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_R_EN, left);
 }
 
 bool I2C_TPA2016::rightEnabled() {
@@ -75,11 +76,11 @@ bool I2C_TPA2016::leftEnabled() {
 }
 
 void I2C_TPA2016::softwareShutdown(bool shutdown) {
-
+	boolWrite(TPA2016_SETUP, TPA2016_SETUP_SWS, shutdown);
 }
 
 bool I2C_TPA2016::ready() {
-	return false;
+	return readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS;
 }
 
 void I2C_TPA2016::resetShort(bool right, bool left) {

@@ -155,6 +155,7 @@ private:
 	uint8_t bus;
 	uint8_t address;
 	int readI2C();
+	void boolWrite(uint8_t reg, uint8_t bit, bool enable);
 };
 
 #endif /* I2CTPA2016_H_ */
