@@ -2,7 +2,7 @@
 #include "../I2C_TPA2016.h"
 
 // Test of default values
-SCENARIO("Normal values of the amplifier") {
+SCENARIO("Amplifier default values are expected") {
 	GIVEN("An I2C connection on bus 1") {
 		I2C_TPA2016 tpa(1);
 		WHEN("The amplifier starts") {
@@ -55,7 +55,7 @@ SCENARIO("Normal values of the amplifier") {
 }
 
 // Test of registers modifications
-SCENARIO("Modification of the registers") {
+SCENARIO("Toggle-bit features") {
 	GIVEN("An I2C connection on bus 1") {
 		I2C_TPA2016 tpa(1);
 		WHEN("The right and the left channel are turned off then on") {
@@ -110,6 +110,80 @@ SCENARIO("Modification of the registers") {
 				}
 			}
 		}
+	}
+}
 
+SCENARIO("Attack time modification") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		float releaseTime = 0.6576;
+		float releaseTimeRound = 4;
+		float releaseTimeInvalid = -5;
+		float holdTime = 0.0274;
+		float holdTimeRound = 5;
+		float holdTimeInvalid = 2;
+		WHEN("We set an attack time of 1.28ms/6dB") {
+			tpa.setAttackTime(1.28);
+			THEN("Attack time should report 1.28ms/6dB") {
+				REQUIRE(tpa.attackTime() == 1.28f);
+			}
+		}
+		WHEN("We set an attack time of 3ms/6dB (non TPA2016_ATTACK_STEP multiple)") {
+			tpa.setAttackTime(3);
+			THEN("Attack time should report 2.56ms/6dB") {
+				REQUIRE(tpa.attackTime() == 2.56f);
+			}
+		}
+		WHEN("We set an attack time of 200ms/6dB (invalid value)") {
+			THEN("An out-of-range exception should be thrown") {
+				REQUIRE_THROWS_AS(tpa.setAttackTime(200), std::out_of_range);
+			}
+		}
+	}
+}
+
+SCENARIO("Release time modification") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		WHEN("We set an release time of 0.1644sec/6dB") {
+			tpa.setReleaseTime(0.1644);
+			THEN("Release time should report 0.1644sec/6dB") {
+				REQUIRE(tpa.releaseTime() == 0.1644f);
+			}
+		}
+		WHEN("We set an release time of 4sec/6dB (non TPA2016_RELEASE_STEP multiple)") {
+			tpa.setReleaseTime(4);
+			THEN("Release time should report 3.9456sec/6dB") {
+				REQUIRE(tpa.releaseTime() == 3.9456f);
+			}
+		}
+		WHEN("We set an release time of 12sec/6dB (invalid value)") {
+			THEN("An out-of-range exception should be thrown") {
+				REQUIRE_THROWS_AS(tpa.setReleaseTime(12), std::out_of_range);
+			}
+		}
+	}
+}
+
+SCENARIO("Hold time modification") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		WHEN("We set an hold time of 0.0274sec/step") {
+			tpa.setHoldTime(0.0274);
+			THEN("Hold time should report 0.0274sec/step") {
+				REQUIRE(tpa.holdTime() == 0.0274f);
+			}
+		}
+		WHEN("We set an hold time of 0.05sec/step (non TPA2016_HOLD_STEP multiple)") {
+			tpa.setHoldTime(0.05);
+			THEN("Hold time should report 0.0411sec/step") {
+				REQUIRE(tpa.holdTime() == 0.0411f);
+			}
+		}
+		WHEN("We set an hold time of 2sec/step (invalid value)") {
+			THEN("An out-of-range exception should be thrown") {
+				REQUIRE_THROWS_AS(tpa.setHoldTime(2), std::out_of_range);
+			}
+		}
 	}
 }
