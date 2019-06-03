@@ -37,7 +37,7 @@ I2C_TPA2016::~I2C_TPA2016() {
 	}
 }
 
-void I2C_TPA2016::writeI2C(uint8_t regAddress, int8_t value) {
+void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
 	if(i2c_smbus_write_byte_data(i2C_file, regAddress, value) < 0)
 	{
 		throw std::runtime_error(strerror(errno));
@@ -146,11 +146,23 @@ bool I2C_TPA2016::holdControlEnabled() {
 }
 
 void I2C_TPA2016::setGain(int8_t gain) {
-	
+	if(gain > 30 || gain < -28) {
+		throw std::out_of_range("Illegal gain value : must be between -28 and 30");
+	}
+	/*
+	 * int8_t follows two's compliment notation. So any 5-bits number will be "left padded" with ones on bits 5, 6, 7 (remember, flip bits and add one).
+	 * Therefore, even if gain is "8-bits two's compliment", it will work for a "6-bits two's compliment".
+	 */
+	writeI2C(TPA2016_GAIN, gain);
 }
 
 int8_t I2C_TPA2016::gain() {
-	return 0;
+	uint8_t gain = readI2C(TPA2016_GAIN);
+	/*
+	 * We get a 6-bits two's compliment. If bit 6 is 1, the value is negative
+	 * so left pad with ones (| 0xC0) so we have a true 8-bits two's compliment.
+	 */
+	return (gain & 0x20) ? gain | 0xC0 : gain;
 }
 
 void I2C_TPA2016::enableLimiter(bool limiter) {

@@ -216,7 +216,7 @@ SCENARIO("Fixed gain modification") {
 		I2C_TPA2016 tpa(1);
 		WHEN("We set the gain to -28dB") {
 			tpa.setGain(-28);
-			THEN("Gain should report 18dB") {
+			THEN("Gain should report -28dBdB") {
 				CHECK(tpa.gain() == -28);
 			}
 		}

@@ -26,6 +26,8 @@ bool setup(BelaContext *context, void *userData)
 	I2C_TPA2016 tpa(i2c_bus);
 	
 	tpa.enableChannels(false, false);
+	tpa.setGain(-28);
+	tpa.setGain(28);
 	return true;
 }
 

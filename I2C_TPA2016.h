@@ -28,6 +28,7 @@
 #include <iostream>
 #include <errno.h>
 #include <string.h>
+#include <bitset>
 
 // Register 1 : function control
 #define TPA2016_SETUP 0x1
@@ -159,7 +160,7 @@ private:
 	uint8_t bus;
 	uint8_t address;
 	uint8_t readI2C(uint8_t regAddress);
-	void writeI2C(uint8_t regAddress, int8_t value);
+	void writeI2C(uint8_t regAddress, uint8_t value);
 	int readI2C();
 	/**
 	 * Small helper to avoid code duplication.
