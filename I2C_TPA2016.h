@@ -155,12 +155,11 @@ public:
 	void setMaxGain(uint8_t x);
 	uint8_t maxGain();
 	void disableAGC();
-
-	uint8_t readI2C(uint8_t regAddress);
-	void writeI2C(uint8_t regAddress, uint8_t value);
 private:
 	uint8_t bus;
 	uint8_t address;
+	uint8_t readI2C(uint8_t regAddress);
+	void writeI2C(uint8_t regAddress, int8_t value);
 	int readI2C();
 	/**
 	 * Small helper to avoid code duplication.

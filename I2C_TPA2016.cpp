@@ -37,7 +37,7 @@ I2C_TPA2016::~I2C_TPA2016() {
 	}
 }
 
-void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
+void I2C_TPA2016::writeI2C(uint8_t regAddress, int8_t value) {
 	if(i2c_smbus_write_byte_data(i2C_file, regAddress, value) < 0)
 	{
 		throw std::runtime_error(strerror(errno));
@@ -146,7 +146,7 @@ bool I2C_TPA2016::holdControlEnabled() {
 }
 
 void I2C_TPA2016::setGain(int8_t gain) {
-
+	
 }
 
 int8_t I2C_TPA2016::gain() {
