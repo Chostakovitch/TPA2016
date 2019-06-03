@@ -197,12 +197,21 @@ uint8_t I2C_TPA2016::compressionRatio() {
 	return 0;
 }
 
-void I2C_TPA2016::setMaxGain(uint8_t x) {
-
+void I2C_TPA2016::setMaxGain(uint8_t maxGain) {
+		if(maxGain > 30 || maxGain < 18) {
+			throw std::out_of_range("Illegal max gain value : should be between 18 and 30dB");
+		}
+		uint8_t reg_value = readI2C(TPA2016_AGC);
+		// "0" is 18dB.
+		maxGain -= 18;
+		// Let the first 4 bits stay the same and change 4 last bits if needed
+		reg_value = (reg_value & 0xF) | (maxGain << 4);
+		writeI2C(TPA2016_AGC, reg_value);
 }
 
 uint8_t I2C_TPA2016::maxGain() {
-	return 0;
+	// Don't forget to compensate the 18dB offset
+	return (readI2C(TPA2016_AGC) >> 4) + 18;
 }
 
 void I2C_TPA2016::disableAGC() {

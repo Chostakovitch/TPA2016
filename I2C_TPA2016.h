@@ -81,7 +81,7 @@ Disable gain increases below the threshold specified in mili volts in the consta
 Bits 2 and 3 are unused*/
 #define TPA2016_AGC 0x7
 // Set the maximum gain the AGC can achieve at 30dB (bits 4 to 7)
-#define TPA2016_AGC_GAIN_MAX 0x0C
+#define TPA2016_AGC_GAIN_MAX 0xC0
 // Set the compression ratio (bit 0 and 1)
 // AGC compression ratio 1:1
 #define TPA2016_AGC_1 0x00
@@ -153,7 +153,7 @@ public:
 	// Register 7
 	void setCompressionRatio(uint8_t x);
 	uint8_t compressionRatio();
-	void setMaxGain(uint8_t x);
+	void setMaxGain(uint8_t maxGain);
 	uint8_t maxGain();
 	void disableAGC();
 private:
