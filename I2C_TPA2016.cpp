@@ -81,7 +81,7 @@ void I2C_TPA2016::softwareShutdown(bool shutdown) {
 
 bool I2C_TPA2016::ready() {
 	// TPA2016_SETUP_SWS is shutdown enabled, negate to get readiness
-	return ~(readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS);
+	return !(readI2C(TPA2016_SETUP) & TPA2016_SETUP_SWS);
 }
 
 void I2C_TPA2016::resetShort(bool right, bool left) {
