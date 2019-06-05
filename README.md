@@ -1,3 +1,10 @@
+# WIP
+
+Obsolete info below.
+Todo :
+* Makefile
+* Logic tests and features (e.g. can disable limiter only when compression is disabled)
+
 ## Dependencies
 * [Catch2](https://github.com/catchorg/Catch2) for testing
 * [Bela platform](bela.io/) (or [BeagleBone Black](https://beagleboard.org/black) **with some adaptation** for running - will not work as is, especially because of I2C.h dependency)
