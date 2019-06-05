@@ -48,17 +48,22 @@
 // Enables Noise Gate function (bit 0)
 #define TPA2016_SETUP_NOISEGATE 0x01
 
-/* Register 2 : AGC Attack control. Used to set AGC attack time, i.e. the minimum time between gain decreases.
-Only the first 6 bits are used. */
+// Register 2 : AGC Attack control. Only the first 6 bits are used.
 #define TPA2016_ATK 0x2
 
-/* Register 3 : AGC Release control. Used to set AGC release time, i.e. the minimum time between gain increases.
-Only the first 6 bits are used. */
+// Register 3 : AGC Release control. Only the first 6 bits are used.
 #define TPA2016_REL 0x3
 
-/* Register 4 : AGC Hold control. Used to set AGC hold time, i.e. the minimum time between a gain decrease (attack) and a gain increase (release).
-Only the first 6 bits are used. Set to 0 to disable hold function. */
+/* Register 4 : AGC Hold control. Only the first 6 bits are used.
+Set to 0 to disable hold function. */
 #define TPA2016_HOLD 0x4
+
+// Increment step in ms/6dB value of attack time
+#define TPA2016_ATTACK_STEP 1.28f
+// Increment step in sec/6dB of release time
+#define TPA2016_RELEASE_STEP 0.1644f
+// Increment step in sec/step of hold time
+#define TPA2016_HOLD_STEP 0.0137f
 
 /* Register 5 : AGC Fixed gain control.
 If the Compression is enabled, fixed gain is adjustable from –28dB to 30dB.
@@ -70,24 +75,14 @@ Only the first 5 bits are used. Two's compliment. */
 #define TPA2016_LIMITER 0x6
 // Disables the output limiter function. Can only be disabled when the AGC compression ratio is 1:1 (bit 7)
 #define TPA2016_LIMITER_DISABLE 0x80
-/* NoiseGate Thresholds (only functional when the AGC compression ratio is not 1:1).
-Disable gain increases below the threshold specified in mili volts in the constant name (bits 5 and 6) */
 
-/* Register 7 : AGC Control (2/2)
-Bits 2 and 3 are unused*/
+// Register 7 : AGC Control (2/2) : Bits 2 and 3 are unused
 #define TPA2016_AGC 0x7
 // Set the maximum gain the AGC can achieve at 30dB (bits 4 to 7)
 #define TPA2016_AGC_GAIN_MAX 0xC0
 
 // Defaut I2C address
 #define TPA2016_I2CADDR 0x58
-
-// Increment step in ms/6dB value of attack time
-#define TPA2016_ATTACK_STEP 1.28f
-// Increment step in sec/6dB of release time
-#define TPA2016_RELEASE_STEP 0.1644f
-// Increment step in sec/step of hold time
-#define TPA2016_HOLD_STEP 0.0137f
 
 enum class TPA2016_LIMITER_NOISEGATE: uint8_t {
 	_1MV = 0x00, // (0000 0000)
@@ -97,14 +92,14 @@ enum class TPA2016_LIMITER_NOISEGATE: uint8_t {
 };
 
 enum class TPA2016_COMPRESSION_RATIO: uint8_t {
-	// AGC compression ratio 1:1
- _1_1 = 0x00,
-	// AGC compression ratio 1:2
- _1_2 = 0x01,
-	// AGC compression ratio 1:4
- _1_4 = 0x02,
-	// AGC compression ratio 1:8
- _1_8 = 0x03
+		// AGC compression ratio 1:1
+	 _1_1 = 0x00,
+		// AGC compression ratio 1:2
+	 _1_2 = 0x01,
+		// AGC compression ratio 1:4
+	 _1_4 = 0x02,
+		// AGC compression ratio 1:8
+	 _1_8 = 0x03
 };
 
 class I2C_TPA2016 : public I2c
@@ -130,14 +125,26 @@ public:
 	bool noiseGateEnabled();
 
 	// Register 2
+	/**
+	 * Changes the minimum time between gain decreases.
+	 * @param attack Attack time in ms/6dB
+	 */
 	void setAttackTime(float attack);
 	float attackTime();
 
 	// Register 3
+	/**
+	 * Changes the minimum time between gain increases.
+	 * @param release Release time in sec/6dB
+	 */
 	void setReleaseTime(float release);
 	float releaseTime();
 
 	// Register 4
+	/**
+	 * Changes the minimum time between a gain decrease (attack) and a gain increase (release)
+	 * @param hold Hold time in second (per step)
+	 */
 	void setHoldTime(float hold);
 	float holdTime();
 	void disableHoldControl();
@@ -174,24 +181,6 @@ private:
 	 * @param enable If the feature should be enabled
 	 */
 	void boolWrite(uint8_t reg, uint8_t bit, bool enable);
-	/**
-	 * Apply conversion table specified in datasheet for the attack time
-	 * @param  attackTime Attack time in ms/6dB
-	 * @return            Value for register 2 corresponding to attackTime
-	 */
-	uint8_t convertAttackTime(float attackTime);
-	/**
-	 * Apply conversion table specified in datasheet for the release time
-	 * @param  releaseTime Release time in sec/6dB
-	 * @return             Value for register 3 corresponding to releaseTime
-	 */
-	uint8_t convertReleaseTime(float releaseTime);
-	/**
-	 * Apply conversion table specified in datasheet for the hold time
-	 * @param  releaseTime Hold time in second (per step)
-	 * @return             Value for register 3 correspoding to holdTime
-	 */
-	uint8_t convertHoldTime(float holdTime);
 };
 
 #endif /* I2CTPA2016_H_ */

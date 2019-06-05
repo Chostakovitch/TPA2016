@@ -110,7 +110,11 @@ bool I2C_TPA2016::noiseGateEnabled() {
 }
 
 void I2C_TPA2016::setAttackTime(float attack) {
-	writeI2C(TPA2016_ATK, convertAttackTime(attack));
+	if(attack > 80.66f || attack < 1.28f) {
+		throw std::out_of_range("Illegal attack time value");
+	}
+	// Apply conversion table specified in datasheet for the attack time
+	writeI2C(TPA2016_ATK, static_cast<uint8_t>(attackTime / TPA2016_ATTACK_STEP));
 }
 
 float I2C_TPA2016::attackTime() {
@@ -119,7 +123,10 @@ float I2C_TPA2016::attackTime() {
 }
 
 void I2C_TPA2016::setReleaseTime(float release) {
-	writeI2C(TPA2016_REL, convertReleaseTime(release));
+	if(release > 10.36f || release < 0.1644f) {
+		throw std::out_of_range("Illegal release time value");
+	}
+	writeI2C(TPA2016_REL, static_cast<uint8_t>(release / TPA2016_RELEASE_STEP));
 }
 
 float I2C_TPA2016::releaseTime() {
@@ -128,7 +135,10 @@ float I2C_TPA2016::releaseTime() {
 }
 
 void I2C_TPA2016::setHoldTime(float hold) {
-	writeI2C(TPA2016_HOLD, convertHoldTime(hold));
+	if(hold > 0.8631f || hold < 0) {
+		throw std::out_of_range("Illegal hold time value");
+	}
+	writeI2C(TPA2016_HOLD, static_cast<uint8_t>(hold / TPA2016_HOLD_STEP));
 }
 
 float I2C_TPA2016::holdTime() {
@@ -166,11 +176,11 @@ int8_t I2C_TPA2016::gain() {
 }
 
 void I2C_TPA2016::enableLimiter(bool limiter) {
-
+	boolWrite(TPA2016_LIMITER, TPA2016_LIMITER_DISABLE, !limiter);
 }
 
 bool I2C_TPA2016::limiterEnabled() {
-	return false;
+	return !(readI2C(TPA2016_LIMITER) & TPA2016_LIMITER_DISABLE);
 }
 
 void I2C_TPA2016::setLimiterLevel(int8_t limit) {
@@ -212,28 +222,6 @@ void I2C_TPA2016::setMaxGain(uint8_t maxGain) {
 uint8_t I2C_TPA2016::maxGain() {
 	// Don't forget to compensate the 18dB offset
 	return (readI2C(TPA2016_AGC) >> 4) + 18;
-}
-
-uint8_t I2C_TPA2016::convertAttackTime(float attackTime) {
-	if(attackTime > 80.66f || attackTime < 1.28f) {
-		throw std::out_of_range("Illegal attack time value");
-	}
-	// The quotient of the division gives us how many TPA2016_ATTACK_STEP are in attackTime, this is the reg value
-	return static_cast<uint8_t>(attackTime / TPA2016_ATTACK_STEP);
-}
-
-uint8_t I2C_TPA2016::convertReleaseTime(float releaseTime) {
-	if(releaseTime > 10.36f || releaseTime < 0.1644f) {
-		throw std::out_of_range("Illegal release time value");
-	}
-	return static_cast<uint8_t>(releaseTime / TPA2016_RELEASE_STEP);
-}
-
-uint8_t I2C_TPA2016::convertHoldTime(float holdTime) {
-	if(holdTime > 0.8631f || holdTime < 0) {
-		throw std::out_of_range("Illegal hold time value");
-	}
-	return static_cast<uint8_t>(holdTime / TPA2016_HOLD_STEP);
 }
 
 // We do not provide reading without register adress, as we already have SMBus method to write register adress then read value.
