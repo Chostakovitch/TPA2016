@@ -24,10 +24,10 @@ SCENARIO("Amplifier default values are expected") {
 				CHECK(tpa.noiseGateEnabled());
 			}
 			THEN("Attack time is 6.4ms/6dB") {
-				CHECK(tpa.attackTime() == 5);
+				CHECK(tpa.attackTime() == 6.4f);
 			}
-			THEN("Release time is 1.81s/6dB") {
-				CHECK(tpa.releaseTime() == 11);
+			THEN("Release time is 1.8084s/6dB") {
+				CHECK(tpa.releaseTime() == 1.8084f);
 			}
 			THEN("Hold time is disabled") {
 				CHECK(tpa.holdTime() == 0);
@@ -42,10 +42,10 @@ SCENARIO("Amplifier default values are expected") {
 				CHECK(tpa.noiseGateThreshold() == TPA2016_LIMITER_NOISEGATE::_4MV);
 			}
 			THEN("Output limiter level is 6.5dBV") {
-				CHECK(tpa.limiterLevel() == 26);
+				CHECK(tpa.limiterLevel() == 6.5f);
 			}
 			THEN("Max gain is 30dB") {
-				CHECK(tpa.maxGain() == 12);
+				CHECK(tpa.maxGain() == 30);
 			}
 			THEN("Compression ratio is 1:4") {
 				CHECK(tpa.compressionRatio() == TPA2016_COMPRESSION_RATIO::_1_4);
