@@ -7,7 +7,7 @@
  *
  * This class allows to read and write the 8-bits registers of the TPA2016D2 via I2C.
  * Examples of parameters which can be changed via I2C : AGC (Automatic Gain Control) activation, compression ratio, limiter level...
- * The datasheet for the TPA2016D2 can be found here : http://www.adafruit.com/datasheets/TPA2016D2.pdf
+ * The datasheet for the TPA2016D2 can be found here : https://www.ti.com/product/TPA2016D2/technicaldocuments
  *
  * We use SMBus protocol as it will allow to use either an I2C or SMBus adapter, and as we only use basic features of I2C (read/write).
  * See https://www.kernel.org/doc/Documentation/i2c/smbus-protocol for more explanations.
@@ -73,33 +73,29 @@ Only the first 5 bits are used. Two's compliment. */
 
 // Register 6 : AGC Control (1/2). The first 5 bits are used to set the output limiter level.
 #define TPA2016_LIMITER 0x6
+// Increment step in dBV for output limiter level
+#define TPA2016_LIMITER_STEP 0.5f
 // Disables the output limiter function. Can only be disabled when the AGC compression ratio is 1:1 (bit 7)
 #define TPA2016_LIMITER_DISABLE 0x80
 
 // Register 7 : AGC Control (2/2) : Bits 2 and 3 are unused
 #define TPA2016_AGC 0x7
-// Set the maximum gain the AGC can achieve at 30dB (bits 4 to 7)
-#define TPA2016_AGC_GAIN_MAX 0xC0
 
 // Defaut I2C address
 #define TPA2016_I2CADDR 0x58
 
 enum class TPA2016_LIMITER_NOISEGATE: uint8_t {
-	_1MV = 0x00, // (0000 0000)
-	_4MV = 0x20, // (0010 0000)
-	_10MV = 0x40, // (0100 0000)
-	_20MV = 0x60 // (0110 0000)
+	_1MV = 0x00,
+	_4MV = 0x20,
+	_10MV = 0x40,
+	_20MV = 0x60
 };
 
 enum class TPA2016_COMPRESSION_RATIO: uint8_t {
-		// AGC compression ratio 1:1
-	 _1_1 = 0x00,
-		// AGC compression ratio 1:2
-	 _1_2 = 0x01,
-		// AGC compression ratio 1:4
-	 _1_4 = 0x02,
-		// AGC compression ratio 1:8
-	 _1_8 = 0x03
+	 _1_1 = 0x00, // 1:1
+	 _1_2 = 0x01, // 1:2
+	 _1_4 = 0x02, // 1:4
+	 _1_8 = 0x03 // 1:8
 };
 
 class I2C_TPA2016 : public I2c

@@ -111,7 +111,7 @@ bool I2C_TPA2016::noiseGateEnabled() {
 
 void I2C_TPA2016::setAttackTime(float attack) {
 	if(attack > 80.66f || attack < 1.28f) {
-		throw std::out_of_range("Illegal attack time value");
+		throw std::out_of_range("Illegal attack time value : must be between 1.28ms/6dB and 80.66ms/6dB");
 	}
 	// Apply conversion table specified in datasheet for the attack time
 	writeI2C(TPA2016_ATK, static_cast<uint8_t>(attackTime / TPA2016_ATTACK_STEP));
@@ -124,7 +124,7 @@ float I2C_TPA2016::attackTime() {
 
 void I2C_TPA2016::setReleaseTime(float release) {
 	if(release > 10.36f || release < 0.1644f) {
-		throw std::out_of_range("Illegal release time value");
+		throw std::out_of_range("Illegal release time value : must be between 0.01644s/6dB and 10.36s/6dB");
 	}
 	writeI2C(TPA2016_REL, static_cast<uint8_t>(release / TPA2016_RELEASE_STEP));
 }
@@ -136,7 +136,7 @@ float I2C_TPA2016::releaseTime() {
 
 void I2C_TPA2016::setHoldTime(float hold) {
 	if(hold > 0.8631f || hold < 0) {
-		throw std::out_of_range("Illegal hold time value");
+		throw std::out_of_range("Illegal hold time value : must be between 0 and 0.8631s/step");
 	}
 	writeI2C(TPA2016_HOLD, static_cast<uint8_t>(hold / TPA2016_HOLD_STEP));
 }
@@ -157,11 +157,11 @@ bool I2C_TPA2016::holdControlEnabled() {
 
 void I2C_TPA2016::setGain(int8_t gain) {
 	if(gain > 30 || gain < -28) {
-		throw std::out_of_range("Illegal gain value : must be between -28 and 30");
+		throw std::out_of_range("Illegal gain value : must be between -28dB and 30dB");
 	}
 	/*
 	 * int8_t follows two's compliment notation. So any 5-bits number will be "left padded" with ones on bits 5, 6, 7 (remember, flip bits and add one).
-	 * Therefore, even if gain is "8-bits two's compliment", it will work for a "6-bits two's compliment".
+	 * Therefore, even if gain is "8-bits two's compliment", it will also be a "6-bits two's compliment".
 	 */
 	writeI2C(TPA2016_GAIN, gain);
 }
@@ -209,7 +209,7 @@ TPA2016_COMPRESSION_RATIO I2C_TPA2016::compressionRatio() {
 
 void I2C_TPA2016::setMaxGain(uint8_t maxGain) {
 		if(maxGain > 30 || maxGain < 18) {
-			throw std::out_of_range("Illegal max gain value : should be between 18 and 30dB");
+			throw std::out_of_range("Illegal max gain value : should be between 18dB and 30dB");
 		}
 		uint8_t reg_value = readI2C(TPA2016_AGC);
 		// "0" is 18dB.

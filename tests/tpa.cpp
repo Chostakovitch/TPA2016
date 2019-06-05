@@ -126,12 +126,6 @@ SCENARIO("Toggle-bit features") {
 SCENARIO("Attack time modification") {
 	GIVEN("An I2C connection on bus 1") {
 		I2C_TPA2016 tpa(1);
-		float releaseTime = 0.6576;
-		float releaseTimeRound = 4;
-		float releaseTimeInvalid = -5;
-		float holdTime = 0.0274;
-		float holdTimeRound = 5;
-		float holdTimeInvalid = 2;
 		WHEN("We set an attack time of 1.28ms/6dB") {
 			tpa.setAttackTime(1.28);
 			THEN("Attack time should report 1.28ms/6dB") {
