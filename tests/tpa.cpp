@@ -39,7 +39,7 @@ SCENARIO("Amplifier default values are expected") {
 				CHECK(tpa.limiterEnabled());
 			}
 			THEN("NoiseGate Treshold is 4mV RMS") {
-				CHECK(tpa.noiseGateThreshold() == 1);
+				CHECK(tpa.noiseGateThreshold() == TPA2016_LIMITER_NOISEGATE::_4MV);
 			}
 			THEN("Output limiter level is 6.5dBV") {
 				CHECK(tpa.limiterLevel() == 26);
@@ -47,8 +47,8 @@ SCENARIO("Amplifier default values are expected") {
 			THEN("Max gain is 30dB") {
 				CHECK(tpa.maxGain() == 12);
 			}
-			THEN("Compression ratio is 4:1") {
-				CHECK(tpa.compressionRatio() == TPA2016_AGC_4);
+			THEN("Compression ratio is 1:4") {
+				CHECK(tpa.compressionRatio() == TPA2016_COMPRESSION_RATIO::_1_4);
 			}
 		}
 	}
@@ -60,14 +60,14 @@ SCENARIO("Toggle-bit features") {
 		I2C_TPA2016 tpa(1);
 		WHEN("The right and the left channel are turned off then on") {
 			tpa.enableChannels(false, false);
-			THEN("Their status change to off") {
+			THEN("Their status first changes to off") {
 				CHECK(!tpa.rightEnabled());
 				CHECK(!tpa.leftEnabled());
-			}
-			tpa.enableChannels(true, true);
-			THEN("Their status change to on") {
-				CHECK(tpa.rightEnabled());
-				CHECK(tpa.leftEnabled());
+				tpa.enableChannels(true, true);
+				THEN("Their status then changes to on") {
+					CHECK(tpa.rightEnabled());
+					CHECK(tpa.leftEnabled());
+				}
 			}
 		}
 
@@ -78,6 +78,7 @@ SCENARIO("Toggle-bit features") {
 				CHECK(!tpa.leftEnabled());
 			}
 		}
+
 		WHEN("We request software shutdown") {
 			tpa.softwareShutdown(true);
 			THEN("Amplifier is not ready anymore") {
@@ -98,15 +99,24 @@ SCENARIO("Toggle-bit features") {
 			}
 		}
 
-		WHEN("Noise gate is turned on") {
+		WHEN("Noise gate is turned on then offs") {
 			tpa.enableNoiseGate(true);
-			THEN("Noise gate is enabled") {
+			THEN("Noise gate is first enabled") {
 				CHECK(tpa.noiseGateEnabled());
-				WHEN("Noise gate is turned off") {
-					tpa.enableNoiseGate(false);
-					THEN("Noise gate is disabled") {
-						CHECK(!tpa.noiseGateEnabled());
-					}
+				tpa.enableNoiseGate(false);
+				THEN("Noise gate is then disabled") {
+					CHECK(!tpa.noiseGateEnabled());
+				}
+			}
+		}
+
+		WHEN("Output limiter is turn off then on") {
+			tpa.enableLimiter(false);
+			THEN("Limiter is first disabled") {
+				CHECK(!tpa.limiterEnabled());
+				tpa.enableLimiter(true);
+				THEN("Limiter is then enabled") {
+					CHECK(tpa.limiterEnabled());
 				}
 			}
 		}
@@ -229,6 +239,53 @@ SCENARIO("Fixed gain modification") {
 		WHEN("We set the gain to 31dB (invalid value)") {
 			THEN("An out-of-range exception should be thrown") {
 				CHECK_THROWS_AS(tpa.setGain(31), std::out_of_range);
+			}
+		}
+	}
+}
+
+SCENARIO("Noise gate threshold") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		WHEN("We set the noise gate threshold to 4mVrms") {
+			tpa.setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE::_4MV);
+			THEN("Reported noise gate threshold is 4mVrms") {
+				CHECK(tpa.noiseGateThreshold() == TPA2016_LIMITER_NOISEGATE::_4MV);
+			}
+		}
+	}
+}
+
+SCENARIO("Output limiter level") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		WHEN("We set the limiter level to -6.5dBV") {
+			tpa.setLimiterLevel(-6.5);
+			THEN("Limiter level should report -6.5dBV") {
+				CHECK(tpa.limiterLevel() == -6.5f);
+			}
+		}
+		WHEN("We set the limiter level to 7.3dBV") {
+			tpa.setLimiterLevel(7.3);
+			THEN("Limiter level should report 7dBV") {
+				CHECK(tpa.limiterLevel() == 7);
+			}
+		}
+		WHEN("We set the limiter level to 10dBV") {
+			THEN("An out-of-range exception should be thrown") {
+				CHECK_THROWS_AS(tpa.setLimiterLevel(10), std::out_of_range);
+			}
+		}
+	}
+}
+
+SCENARIO("Compression ratio") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		WHEN("We set the compression ratio to 1:1 (off)") {
+			tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_1);
+			THEN("Reporter compression ratio is 1:1") {
+				CHECK(tpa.compressionRatio() == TPA2016_COMPRESSION_RATIO::_1_1);
 			}
 		}
 	}
