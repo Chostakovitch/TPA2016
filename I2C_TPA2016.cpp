@@ -114,7 +114,7 @@ void I2C_TPA2016::setAttackTime(float attack) {
 		throw std::out_of_range("Illegal attack time value : must be between 1.28ms/6dB and 80.66ms/6dB");
 	}
 	// Apply conversion table specified in datasheet for the attack time
-	writeI2C(TPA2016_ATK, static_cast<uint8_t>(attackTime / TPA2016_ATTACK_STEP));
+	writeI2C(TPA2016_ATK, static_cast<uint8_t>(attack / TPA2016_ATTACK_STEP));
 }
 
 float I2C_TPA2016::attackTime() {
@@ -183,28 +183,69 @@ bool I2C_TPA2016::limiterEnabled() {
 	return !(readI2C(TPA2016_LIMITER) & TPA2016_LIMITER_DISABLE);
 }
 
-void I2C_TPA2016::setLimiterLevel(int8_t limit) {
-
+void I2C_TPA2016::setLimiterLevel(float limit) {
+	if(limit > 9 || limit < -6.5) {
+		throw std::out_of_range("Illegal limiter level value : must be between -6.5dBV and 9dBV");
+	}
+	// 0x00 is -6.5dBV
+	limit += 6.5f;
+	// Mask-off first 5 bits
+	uint8_t reg_value = readI2C(TPA2016_LIMITER) & ~0x1F;
+	reg_value |= static_cast<uint8_t>(limit / TPA2016_LIMITER_STEP);
+	writeI2C(TPA2016_LIMITER, reg_value);
 }
 
-int8_t I2C_TPA2016::limiterLevel() {
-	return 0;
+float I2C_TPA2016::limiterLevel() {
+	// Get only the first 5 bits and compensate offset
+	return (readI2C(TPA2016_LIMITER) & 0x1F) * TPA2016_LIMITER_STEP - 6.5f;
 }
 
 void I2C_TPA2016::setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE threshold) {
-
+	// Mask-off bit 5 and 6
+	uint8_t reg_value = readI2C(TPA2016_LIMITER) & ~0x60;
+	reg_value |= static_cast<uint8_t>(threshold);
+	writeI2C(TPA2016_LIMITER, reg_value);
 }
 
 TPA2016_LIMITER_NOISEGATE I2C_TPA2016::noiseGateThreshold() {
-
+	// Get only bit 5 and 6
+	uint8_t threshold = readI2C(TPA2016_LIMITER) & 0x60;
+	switch(threshold) {
+		case 0x00:
+			return TPA2016_LIMITER_NOISEGATE::_1MV;
+		case 0x20:
+			return TPA2016_LIMITER_NOISEGATE::_4MV;
+		case 0x40:
+			return TPA2016_LIMITER_NOISEGATE::_10MV;
+		case 0x60:
+			return TPA2016_LIMITER_NOISEGATE::_20MV;
+		default:
+			throw std::out_of_range("Unknown noise gate threshold value");
+	}
 }
 
-void I2C_TPA2016::setCompressionRatio(TPA2016_COMPRESSION_RATIO x) {
-
+void I2C_TPA2016::setCompressionRatio(TPA2016_COMPRESSION_RATIO ratio) {
+	// Mask-off bits 0 and 1
+	uint8_t reg_value = readI2C(TPA2016_AGC) & ~0x03;
+	reg_value |= static_cast<uint8_t>(ratio);
+	writeI2C(TPA2016_AGC, reg_value);
 }
 
 TPA2016_COMPRESSION_RATIO I2C_TPA2016::compressionRatio() {
-
+	// Get only bit 0 and 1
+	uint8_t ratio = readI2C(TPA2016_AGC) & 0x03;
+	switch(ratio) {
+		case 0x00:
+			return TPA2016_COMPRESSION_RATIO::_1_1;
+		case 0x01:
+			return TPA2016_COMPRESSION_RATIO::_1_2;
+		case 0x02:
+			return TPA2016_COMPRESSION_RATIO::_1_4;
+		case 0x03:
+			return TPA2016_COMPRESSION_RATIO::_1_8;
+		default:
+			throw std::out_of_range("Unknown compression ratio value");
+	}
 }
 
 void I2C_TPA2016::setMaxGain(uint8_t maxGain) {

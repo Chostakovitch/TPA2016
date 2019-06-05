@@ -153,13 +153,13 @@ public:
 	// Register 6
 	void enableLimiter(bool limiter);
 	bool limiterEnabled();
-	void setLimiterLevel(int8_t limit);
-	int8_t limiterLevel();
+	void setLimiterLevel(float limit);
+	float limiterLevel();
 	void setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE threshold);
 	TPA2016_LIMITER_NOISEGATE noiseGateThreshold();
 
 	// Register 7
-	void setCompressionRatio(TPA2016_COMPRESSION_RATIO x);
+	void setCompressionRatio(TPA2016_COMPRESSION_RATIO ratio);
 	TPA2016_COMPRESSION_RATIO compressionRatio();
 	void setMaxGain(uint8_t maxGain);
 	uint8_t maxGain();
