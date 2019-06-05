@@ -3,19 +3,27 @@
 I2C_TPA2016::I2C_TPA2016(uint8_t bus, uint8_t address) {
 	this->bus = bus;
 	this->address = address;
-	int code;
 
 	// Open I2C device
-	if((code = initI2C_RW(bus, address, 0)) != 0) {
-		throw std::runtime_error("Unable to initialize I2C");
+	char filename[MAX_BUF_NAME];
+	char error[MAX_BUF_ERROR];
+	snprintf(filename, sizeof(filename), "/dev/i2c-%d", bus);
+	if((fd = open(filename, O_RDWR)) < 0) {
+		snprintf(error, sizeof(error), "Failed to initialize I2C on bus %d", bus);
+		throw std::runtime_error(error);
 	}
 
-	/* Check if all features used by this code are available, here :
+	if (ioctl(fd, I2C_SLAVE, address) < 0){
+		snprintf(error, sizeof(error), "Failed to target TPA as a slave (address %#x)", address);
+		throw std::runtime_error(error);
+	}
+
+	/* Check if all features used by this code are available, i.e. :
 		- Reading and writing bytes
-		- Combined read/write transaction without stop in between (used by i2c_smbus_read_byte_data).
+		- Combined read/write transaction without stop bit in between (used by i2c_smbus_read_byte_data and needed by the TPA2016D2 to read a register).
 	* See https://www.kernel.org/doc/Documentation/i2c/functionality for details */
 	uint64_t availableFuncs;
-	if (ioctl(i2C_file, I2C_FUNCS, &availableFuncs) < 0) {
+	if (ioctl(fd, I2C_FUNCS, &availableFuncs) < 0) {
 		throw std::runtime_error("Unable to check I2C adapter functionalities");
 	}
 
@@ -32,13 +40,13 @@ I2C_TPA2016::~I2C_TPA2016() {
 	softwareShutdown(true);
 
 	int code;
-	if((code = closeI2C()) != 0) {
+	if((code = close(fd)) != 0) {
 		throw std::runtime_error("Unable to close I2C");
 	}
 }
 
 void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
-	if(i2c_smbus_write_byte_data(i2C_file, regAddress, value) < 0)
+	if(i2c_smbus_write_byte_data(fd, regAddress, value) < 0)
 	{
 		throw std::runtime_error(strerror(errno));
 	}
@@ -46,7 +54,7 @@ void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
 
 uint8_t I2C_TPA2016::readI2C(uint8_t regAddress) {
 	uint8_t res;
-	if((res = i2c_smbus_read_byte_data(i2C_file, regAddress)) < 0)
+	if((res = i2c_smbus_read_byte_data(fd, regAddress)) < 0)
 	{
 		throw std::runtime_error(strerror(errno));
 	}
@@ -263,9 +271,4 @@ void I2C_TPA2016::setMaxGain(uint8_t maxGain) {
 uint8_t I2C_TPA2016::maxGain() {
 	// Don't forget to compensate the 18dB offset
 	return (readI2C(TPA2016_AGC) >> 4) + 18;
-}
-
-// We do not provide reading without register adress, as we already have SMBus method to write register adress then read value.
-int I2C_TPA2016::readI2C() {
-	throw std::logic_error("Function not implemented");
 }

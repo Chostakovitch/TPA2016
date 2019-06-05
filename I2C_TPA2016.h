@@ -1,7 +1,7 @@
 /*
  * I2C_TPA2016.h
  *
- * Port of the Arduino library for the TPA2016D2 stereo amplifier plus a few corrections/additions :
+ * Port in plain C++ of the Arduino library for the TPA2016D2 stereo amplifier plus a few corrections/additions :
  * - See here for the product : https://learn.adafruit.com/adafruit-tpa2016-2-8w-agc-stereo-audio-amplifier for the product
  * - See here for the original libray : https://github.com/adafruit/Adafruit-TPA2016-Library
  *
@@ -23,12 +23,14 @@
 #ifndef I2CTPA2016_H_
 #define I2CTPA2016_H_
 
-#include <Bela.h>
-#include <I2c.h>
 #include <iostream>
-#include <errno.h>
+#include <linux/i2c-dev.h>
 #include <string.h>
-#include <bitset>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define MAX_BUF_NAME 64
+#define MAX_BUF_ERROR 200
 
 // Register 1 : function control
 #define TPA2016_SETUP 0x1
@@ -98,7 +100,7 @@ enum class TPA2016_COMPRESSION_RATIO: uint8_t {
 	 _1_8 = 0x03 // 1:8
 };
 
-class I2C_TPA2016 : public I2c
+class I2C_TPA2016
 {
 public:
 	// Constructor and destructor
@@ -166,9 +168,9 @@ public:
 private:
 	uint8_t bus;
 	uint8_t address;
+	int fd;
 	uint8_t readI2C(uint8_t regAddress);
 	void writeI2C(uint8_t regAddress, uint8_t value);
-	int readI2C();
 	/**
 	 * Small helper to avoid code duplication.
 	 * Are there is a lot of "toggle-bit" functions which basically does the same thing, modulo register address and bit position, this should replace boilerplate code.
