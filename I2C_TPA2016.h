@@ -72,25 +72,12 @@ Only the first 5 bits are used. Two's compliment. */
 #define TPA2016_LIMITER_DISABLE 0x80
 /* NoiseGate Thresholds (only functional when the AGC compression ratio is not 1:1).
 Disable gain increases below the threshold specified in mili volts in the constant name (bits 5 and 6) */
-#define TPA2016_LIMITER_NOISEGATE_1MV 0x00 // (0000 0000)
-#define TPA2016_LIMITER_NOISEGATE_4MV 0x20 // (0010 0000)
-#define TPA2016_LIMITER_NOISEGATE_10MV 0x40 // (0100 0000)
-#define TPA2016_LIMITER_NOISEGATE_20MV 0x60 // (0110 0000)
 
 /* Register 7 : AGC Control (2/2)
 Bits 2 and 3 are unused*/
 #define TPA2016_AGC 0x7
 // Set the maximum gain the AGC can achieve at 30dB (bits 4 to 7)
 #define TPA2016_AGC_GAIN_MAX 0xC0
-// Set the compression ratio (bit 0 and 1)
-// AGC compression ratio 1:1
-#define TPA2016_AGC_1 0x00
-// AGC compression ratio 1:2
-#define TPA2016_AGC_2 0x01
-// AGC compression ratio 1:4
-#define TPA2016_AGC_4 0x02
-// AGC compression ratio 1:8
-#define TPA2016_AGC_8 0x03
 
 // Defaut I2C address
 #define TPA2016_I2CADDR 0x58
@@ -101,6 +88,24 @@ Bits 2 and 3 are unused*/
 #define TPA2016_RELEASE_STEP 0.1644f
 // Increment step in sec/step of hold time
 #define TPA2016_HOLD_STEP 0.0137f
+
+enum class TPA2016_LIMITER_NOISEGATE: uint8_t {
+	_1MV = 0x00, // (0000 0000)
+	_4MV = 0x20, // (0010 0000)
+	_10MV = 0x40, // (0100 0000)
+	_20MV = 0x60 // (0110 0000)
+};
+
+enum class TPA2016_COMPRESSION_RATIO: uint8_t {
+	// AGC compression ratio 1:1
+ _1_1 = 0x00,
+	// AGC compression ratio 1:2
+ _1_2 = 0x01,
+	// AGC compression ratio 1:4
+ _1_4 = 0x02,
+	// AGC compression ratio 1:8
+ _1_8 = 0x03
+};
 
 class I2C_TPA2016 : public I2c
 {
@@ -145,17 +150,16 @@ public:
 	// Register 6
 	void enableLimiter(bool limiter);
 	bool limiterEnabled();
-	void setLimiterLevel(uint8_t limit);
-	uint8_t limiterLevel();
-	void setNoiseGateThreshold(uint8_t threshold);
-	uint8_t noiseGateThreshold();
+	void setLimiterLevel(int8_t limit);
+	int8_t limiterLevel();
+	void setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE threshold);
+	TPA2016_LIMITER_NOISEGATE noiseGateThreshold();
 
 	// Register 7
-	void setCompressionRatio(uint8_t x);
-	uint8_t compressionRatio();
+	void setCompressionRatio(TPA2016_COMPRESSION_RATIO x);
+	TPA2016_COMPRESSION_RATIO compressionRatio();
 	void setMaxGain(uint8_t maxGain);
 	uint8_t maxGain();
-	void disableAGC();
 private:
 	uint8_t bus;
 	uint8_t address;

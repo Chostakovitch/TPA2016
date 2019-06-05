@@ -173,28 +173,28 @@ bool I2C_TPA2016::limiterEnabled() {
 	return false;
 }
 
-void I2C_TPA2016::setLimiterLevel(uint8_t limit) {
+void I2C_TPA2016::setLimiterLevel(int8_t limit) {
 
 }
 
-uint8_t I2C_TPA2016::limiterLevel() {
+int8_t I2C_TPA2016::limiterLevel() {
 	return 0;
 }
 
-void I2C_TPA2016::setNoiseGateThreshold(uint8_t threshold) {
+void I2C_TPA2016::setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE threshold) {
 
 }
 
-uint8_t I2C_TPA2016::noiseGateThreshold() {
-	return 0;
-}
-
-void I2C_TPA2016::setCompressionRatio(uint8_t x) {
+TPA2016_LIMITER_NOISEGATE I2C_TPA2016::noiseGateThreshold() {
 
 }
 
-uint8_t I2C_TPA2016::compressionRatio() {
-	return 0;
+void I2C_TPA2016::setCompressionRatio(TPA2016_COMPRESSION_RATIO x) {
+
+}
+
+TPA2016_COMPRESSION_RATIO I2C_TPA2016::compressionRatio() {
+
 }
 
 void I2C_TPA2016::setMaxGain(uint8_t maxGain) {
@@ -212,10 +212,6 @@ void I2C_TPA2016::setMaxGain(uint8_t maxGain) {
 uint8_t I2C_TPA2016::maxGain() {
 	// Don't forget to compensate the 18dB offset
 	return (readI2C(TPA2016_AGC) >> 4) + 18;
-}
-
-void I2C_TPA2016::disableAGC() {
-
 }
 
 uint8_t I2C_TPA2016::convertAttackTime(float attackTime) {
