@@ -41,7 +41,7 @@ I2C_TPA2016::~I2C_TPA2016() {
 
 	int code;
 	if((code = close(fd)) != 0) {
-		throw std::runtime_error("Unable to close I2C");
+		fprintf(stderr, "Unable to close I2C");
 	}
 }
 
