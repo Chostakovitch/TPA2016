@@ -284,3 +284,27 @@ SCENARIO("Compression ratio") {
 		}
 	}
 }
+
+SCENARIO("Cross-conditions") {
+	GIVEN("An I2C connection on bus 1") {
+		I2C_TPA2016 tpa(1);
+		WHEN("Compression ratio is 1:1") {
+			tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_1);
+			THEN("Noise Gate cannot be enabled") {
+				CHECK_THROWS_AS(tpa.enableNoiseGate(true), std::logic_error);
+			}
+			THEN("NoiseGate Threshold cannot be changed") {
+				CHECK_THROWS_AS(tpa.setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE::_1MV), std::logic_error);
+			}
+			THEN("Fixed gain cannot be below 0dB") {
+				CHECK_THROWS_AS(tpa.setGain(-2), std::out_of_range);
+			}
+		}
+		WHEN("Compression ratio is not 1:1") {
+			tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_2);
+			THEN("Output limiter cannot be disabled") {
+				CHECK_THROWS_AS(tpa.enableLimiter(false), std::logic_error);
+			}
+		}
+	}
+}
