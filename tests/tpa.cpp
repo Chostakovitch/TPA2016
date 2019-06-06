@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include "../I2C_TPA2016.h"
+#include <I2C_TPA2016.h>
 
 // Test of default values
 SCENARIO("Amplifier default values are expected") {

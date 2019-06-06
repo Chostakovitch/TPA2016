@@ -4,3 +4,6 @@ tests/*
 settings.json
 !tests/catch.cpp
 !tests/tpa.cpp
+*.o
+*.d
+*.so
