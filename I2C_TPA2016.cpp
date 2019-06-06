@@ -110,6 +110,9 @@ bool I2C_TPA2016::tooHot() {
 }
 
 void I2C_TPA2016::enableNoiseGate(bool noiseGate) {
+	if(noiseGate && compressionRatio() == TPA2016_COMPRESSION_RATIO::_1_1) {
+		throw std::logic_error("Noise Gate cannot be enabled when compression ratio is 1:1");
+	}
 	boolWrite(TPA2016_SETUP, TPA2016_SETUP_NOISEGATE, noiseGate);
 }
 
@@ -164,6 +167,9 @@ bool I2C_TPA2016::holdControlEnabled() {
 }
 
 void I2C_TPA2016::setGain(int8_t gain) {
+	if(compressionRatio() == TPA2016_COMPRESSION_RATIO::_1_1 && gain < 0) {
+		throw std::out_of_range("Illegal gain value : cannot be negative when compression ratio is 1:1");
+	}
 	if(gain > 30 || gain < -28) {
 		throw std::out_of_range("Illegal gain value : must be between -28dB and 30dB");
 	}
@@ -184,6 +190,9 @@ int8_t I2C_TPA2016::gain() {
 }
 
 void I2C_TPA2016::enableLimiter(bool limiter) {
+	if(!limiter && compressionRatio() != TPA2016_COMPRESSION_RATIO::_1_1) {
+		throw std::logic_error("Limiter cannot be disabled when compression ratio is not 1:1");
+	}
 	boolWrite(TPA2016_LIMITER, TPA2016_LIMITER_DISABLE, !limiter);
 }
 
@@ -209,6 +218,9 @@ float I2C_TPA2016::limiterLevel() {
 }
 
 void I2C_TPA2016::setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE threshold) {
+	if(compressionRatio() == TPA2016_COMPRESSION_RATIO::_1_1) {
+		throw std::logic_error("Noise Gate threshold cannot be changed when compression ratio is 1:1");
+	}
 	// Mask-off bit 5 and 6
 	uint8_t reg_value = readI2C(TPA2016_LIMITER) & ~0x60;
 	reg_value |= static_cast<uint8_t>(threshold);

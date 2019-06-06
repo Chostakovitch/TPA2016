@@ -110,7 +110,9 @@ SCENARIO("Toggle-bit features") {
 			}
 		}
 
-		WHEN("Output limiter is turn off then on") {
+		WHEN("Output limiter is turned off then on") {
+			// Needs to be disabled so limiter is disabled
+			tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_1);
 			tpa.enableLimiter(false);
 			THEN("Limiter is first disabled") {
 				CHECK(!tpa.limiterEnabled());
@@ -119,6 +121,7 @@ SCENARIO("Toggle-bit features") {
 					CHECK(tpa.limiterEnabled());
 				}
 			}
+			tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_2);
 		}
 	}
 }
