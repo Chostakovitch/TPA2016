@@ -31,7 +31,7 @@ test_defaults: test
 	$(OUTPUTTEST) *default*
 
 # Launch tests to check features of the library
-test_lib: tests
+test_lib: test
 	$(OUTPUTTEST) ~*default*
 
 test: $(OUTPUTFILE) $(OUTPUTTEST)

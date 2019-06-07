@@ -1,49 +1,95 @@
-# WIP
+# TPA2016D2 Library for Linux
 
-Obsolete info below.
-Todo :
-* Makefile
-* Logic tests and features (e.g. can disable limiter only when compression is disabled)
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-## Dependencies
-* [Catch2](https://github.com/catchorg/Catch2) for testing
-* [Bela platform](bela.io/) (or [BeagleBone Black](https://beagleboard.org/black) **with some adaptation** for running - will not work as is, especially because of I2C.h dependency)
+- [Features](#features)
+- [Wiring and testing I2C](#wiring-and-testing-i2c)
+- [Compilation](#compilation)
+	- [Install dependencies](#install-dependencies)
+	- [Make and install](#make-and-install)
+	- [Launch tests (optional)](#launch-tests-optional)
+- [Usage](#usage)
 
-This lib assume that you know how to open an I2C adapter on Bela. More info to come.
+<!-- /TOC -->
+
+## Features
+
+This library is originally a port of this [Arduino library](https://github.com/adafruit/Adafruit-TPA2016-Library) which removes Arduino dependencies.
+
+I've taken this great library and added :
+* Reading of values
+* Configuration of all possible parameters
+* Natural configuration (*i.e* "put the maximum gain to 30dB" rather than "put the maximum gain to the value found in the reference manual conversion table")
+* Cross-conditions checks (*e.g.* cannot disable limiter while compression ratio is not 1:1)
+* Tests of the library and of the amplifier itself
+
+## Wiring and testing I2C
+
+In order to use and test the library, you need to successfully connect to the amplifier through an I2C adapter.
+
+The wiring is very simple : just connect SDA, SCL and VCC to the appropriate data, clock and power pin of your I2C adapter, as shown below.
+
+![I2C Wiring of the TPA2016 amplifier](doc/wiring.jpg)
+
+Also, before testing, we recommend to **reset your amplifier registers** at their default value, by forcing `SHDN` pin to `0` (active low). This is the orange wire above. Don't forget to remove the wire before using the amplifier, otherwise it will just not work at all.
+
+To confirm that the amplifier is well detected, you can try :
+```bash
+$ i2cdetect -l
+[...]
+i2c-1   i2c             OMAP I2C adapter                        I2C adapter
+[...]
+```
+
+So I'll use `/dev/i2c-1` on my machine.
+
+```bash
+$ i2cdetect -y -r 1
+0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+50: -- -- -- -- -- -- -- -- 58 -- -- -- -- -- -- --
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+70: -- -- -- -- -- -- -- --
+```
+
+As you can see, the I2C device with address `0x58` is detected on bus 1. This is our amplifier.
+
+```bash
+$ i2cdump -y -f -r 1-7 1 0x58
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:    23 05 0b 00 1c 7f c1                          
+```
+
+We are able to read the registers, so all right, we can use the library.
 
 ## Compilation
 
-Just use `build_project.sh` Bela script or open the project in web IDE.
+### Install dependencies
+* `libi2c-dev`
+* [Catch2](https://github.com/catchorg/Catch2) for testing (*optional*)
+
+### Make and install
+
+To build and install the library as a shared library, just type :
+```bash
+$ make
+$ sudo make install
+```
+
+### Launch tests (optional)
+
+There is two type of tests :
+* Library tests, *i.e.* unit and integration tests. **None of them** should fail. To launch them, just type :
+```bash
+$ make test_lib
+```
+* Amplifier tests, which check that the default values reported by the amplifier are the ones reported in the [reference manual](https://www.ti.com/product/TPA2016D2/technicaldocuments) (page 24 and so on). Some tests could fail, and **this is ok**, this just means that you should not expect the default values written in EEPROM to be the manual's one. To launch them, just type :
+```bash
+$ make test_defaults
+```
 
 ## Usage
-
-This library is made to be very simple to use, *e.g.* if you want to set attack time, just call `setAttackTime(value in ms/6dB)`. Internally, there is a conversion table between the register value and the ms/6dB value, but the library takes care of that. You can nevertheless find those conversion tables in the [TPA2016D2 datasheet](http://www.adafruit.com/datasheets/TPA2016D2.pdf).
-
-If you come from the [original library for Arduino](https://github.com/adafruit/Adafruit-TPA2016-Library), be careful as your code probably need some adaptation. This library assume that you already did the conversion.
-
-## Launch tests
-
-\# todo write about separation between test of the amp and test of the code
-
-Make sure to compile the main project with `-fPIC` flag. This can be done by passing `CPPFLAGS=-fPIC` to the Makefile in IDE settings.
-
-```bash
-$ cd tests
-```
-
-1. Compile main catch file, but do not link. In this file there is no tests, but this helps to [speed up future compilation](https://github.com/catchorg/Catch2/blob/master/docs/slow-compiles.md#top).
-
-```bash
-$ g++ catch.cpp -c
-```
-
-2. Compile tests using shared objects :
-```bash
-# /root/Bela/include is the include path used by the Bela platform
-$ g++ -I/root/Bela/include catch.o ../build/I2C_TPA2016.o tpa.cpp -o tpa_tests
-```
-
-3. Launch tests :
-```bash
-$ ./tpa_tests
-```
