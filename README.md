@@ -33,8 +33,9 @@ The wiring is very simple : just connect SDA, SCL and VCC to the appropriate dat
 
 Also, before testing, we recommend to **reset your amplifier registers** at their default value, by forcing `SHDN` pin to `0` (active low). This is the orange wire above. Don't forget to remove the wire before using the amplifier, otherwise it will just not work at all.
 
-To confirm that the amplifier is well detected, you can try :
+To confirm that the amplifier is well detected, you can try the following commands :
 ```bash
+# Check which I2C adapters are available
 $ i2cdetect -l
 [...]
 i2c-1   i2c             OMAP I2C adapter                        I2C adapter
@@ -44,6 +45,7 @@ i2c-1   i2c             OMAP I2C adapter                        I2C adapter
 So I'll use `/dev/i2c-1` on my machine.
 
 ```bash
+# Check which I2C devices are detected on adapter 1
 $ i2cdetect -y -r 1
 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
 00:          -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -59,6 +61,7 @@ $ i2cdetect -y -r 1
 As you can see, the I2C device with address `0x58` is detected on bus 1. This is our amplifier.
 
 ```bash
+# Dump byte 1-7 of I2C device at addresse 0x58 on adapter 1
 $ i2cdump -y -f -r 1-7 1 0x58
      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
 00:    23 05 0b 00 1c 7f c1                          

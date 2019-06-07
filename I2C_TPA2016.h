@@ -104,28 +104,50 @@ class I2C_TPA2016
 {
 public:
 	// Constructor and destructor
+	/**
+	 * Opens a I2C connection and configure device as a slave
+	 * @param bus     But number (I2C adapter)
+	 * @param address Address of the slave device
+	 * @throw std::runtime_error If any error when configuring device
+	 */
 	I2C_TPA2016(uint8_t bus, uint8_t address = TPA2016_I2CADDR);
 	~I2C_TPA2016();
-
-	void resetAmplifier();
 
 	// Register 1
 	void enableChannels(bool right, bool left);
 	bool rightEnabled();
 	bool leftEnabled();
+	/**
+	 * Control bias, oscillator and control functions
+	 */
 	void softwareShutdown(bool shutdown);
   bool ready();
 	void resetShort(bool right, bool left);
+	/**
+	 * Returns true if a short circuit occurred on right speaker
+	 */
 	bool rightShorted();
+	/**
+	 * Returns true if a short circuit occurred on left speaker
+	 */
 	bool leftShorted();
+	/**
+	 * Returns true if a hardware shutdown due to overheat happened.
+	 */
 	bool tooHot();
+	/**
+	 * Control noise gate function
+	 * @param noiseGate can only be true if compression ratio is not 1:1
+	 * @throw std::logic_error If noiseGate is true and compression ratio is 1:1
+	 */
 	void enableNoiseGate(bool noiseGate);
 	bool noiseGateEnabled();
 
 	// Register 2
 	/**
 	 * Changes the minimum time between gain decreases.
-	 * @param attack Attack time in ms/6dB
+	 * @param attack Attack time in ms/6dB (1.28 <= x <= 80.66)
+	 * @throw std::out_of_range
 	 */
 	void setAttackTime(float attack);
 	float attackTime();
@@ -133,7 +155,8 @@ public:
 	// Register 3
 	/**
 	 * Changes the minimum time between gain increases.
-	 * @param release Release time in sec/6dB
+	 * @param release Release time in sec/6dB (0.1644 <= x <= 10.36)
+	 * @throw std::out_of_range
 	 */
 	void setReleaseTime(float release);
 	float releaseTime();
@@ -141,28 +164,52 @@ public:
 	// Register 4
 	/**
 	 * Changes the minimum time between a gain decrease (attack) and a gain increase (release)
-	 * @param hold Hold time in second (per step)
+	 * @param hold Hold time in second (per step) (0.0137 <= x <= 0.8631)
+	 * @throw std::out_of_range
 	 */
 	void setHoldTime(float hold);
 	float holdTime();
+	/**
+	 * Set hold time to 0, effectively disabling it
+	 */
 	void disableHoldControl();
 	bool holdControlEnabled();
 
 	// Register 5
+	/**
+	 * Choose fixed gain
+	 * @param gain Gain in dB, maximum 30 dB. Minimum -28dB if compression is enabled, 0 otherwise.
+	 * @throw std::out_of_range
+	 */
 	void setGain(int8_t gain);
 	int8_t gain();
 
 	// Register 6
+	/**
+	 * Control output limiter activation
+	 * @param limiter Can only be false when compression ratio is 1:1
+	 * @throw std::logic_error if limiter == false and compression ratio is not 1:1
+	 */
 	void enableLimiter(bool limiter);
 	bool limiterEnabled();
 	void setLimiterLevel(float limit);
 	float limiterLevel();
+	/**
+	 * Change activation threshold of Noise Gate function
+	 * Cannot be called if compression ratio is 1:1
+	 * @throw std::logic_error if compression ratio is 1:1
+	 */
 	void setNoiseGateThreshold(TPA2016_LIMITER_NOISEGATE threshold);
 	TPA2016_LIMITER_NOISEGATE noiseGateThreshold();
 
 	// Register 7
 	void setCompressionRatio(TPA2016_COMPRESSION_RATIO ratio);
 	TPA2016_COMPRESSION_RATIO compressionRatio();
+	/**
+	 * Set maximum gain the amplifier can achieve.
+	 * @param maxGain Maximum gain in dB (0 <= x <= 30)
+	 * @throw std::out_of_range
+	 */
 	void setMaxGain(uint8_t maxGain);
 	uint8_t maxGain();
 private:
