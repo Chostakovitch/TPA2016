@@ -96,3 +96,25 @@ $ make test_defaults
 ```
 
 ## Usage
+
+Import `I2C_TPA2016.h` in your program. Compile with `-ltpa2016` flag or add it to your Makefile `LDFLAGS` variable.
+
+Sample usage :
+```c++
+#include <I2C_TPA2016.h>
+int main(int argc, char const *argv[]) {
+  // Open I2C on bus number 1
+  I2C_TPA2016 tpa(i2c_bus);
+  // Disable left channel
+  tpa.enableChannels(true, false);
+  // Set gain to 25dB
+  tpa.setGain(25);
+  // Disable compression
+  tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_1);
+  // Disable limiter
+  tpa.enableLimiter(false);
+	return 0;
+}
+```
+
+The complete API reference can be found [in the documentation](doc/api.md).
