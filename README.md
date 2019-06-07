@@ -113,7 +113,7 @@ int main(int argc, char const *argv[]) {
   tpa.setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_1);
   // Disable limiter
   tpa.enableLimiter(false);
-	return 0;
+  return 0;
 }
 ```
 

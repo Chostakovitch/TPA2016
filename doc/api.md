@@ -9,60 +9,51 @@
 
 | Type | Name |
 | ---: | :--- |
-| enum  | [**TPA2016\_COMPRESSION\_RATIO**](I2C__TPA2016_8h.md#enum-tpa2016-compression-ratio)  <br> |
-| enum  | [**TPA2016\_LIMITER\_NOISEGATE**](I2C__TPA2016_8h.md#enum-tpa2016-limiter-noisegate)  <br> |
+| enum  | [**TPA2016\_COMPRESSION\_RATIO**](#enum-tpa2016-compression-ratio)  <br> |
+| enum  | [**TPA2016\_LIMITER\_NOISEGATE**](#enum-tpa2016-limiter-noisegate)  <br> |
 
 
 ## Public Functions
 
 | Type | Name |
 | ---: | :--- |
-|   | [**I2C\_TPA2016**](classI2C__TPA2016.md#function-i2c-tpa2016) (uint8\_t bus, uint8\_t address=TPA2016\_I2CADDR) <br>_Opens a I2C connection and configure device as a slave._  |
-|  float | [**attackTime**](classI2C__TPA2016.md#function-attacktime) () <br> |
-|  TPA2016\_COMPRESSION\_RATIO | [**compressionRatio**](classI2C__TPA2016.md#function-compressionratio) () <br> |
-|  void | [**disableHoldControl**](classI2C__TPA2016.md#function-disableholdcontrol) () <br>_Set hold time to 0, effectively disabling it._  |
-|  void | [**enableChannels**](classI2C__TPA2016.md#function-enablechannels) (bool right, bool left) <br> |
-|  void | [**enableLimiter**](classI2C__TPA2016.md#function-enablelimiter) (bool limiter) <br>_Control output limiter activation._  |
-|  void | [**enableNoiseGate**](classI2C__TPA2016.md#function-enablenoisegate) (bool noiseGate) <br>_Control noise gate function._  |
-|  int8\_t | [**gain**](classI2C__TPA2016.md#function-gain) () <br> |
-|  bool | [**holdControlEnabled**](classI2C__TPA2016.md#function-holdcontrolenabled) () <br> |
-|  float | [**holdTime**](classI2C__TPA2016.md#function-holdtime) () <br> |
-|  bool | [**leftEnabled**](classI2C__TPA2016.md#function-leftenabled) () <br> |
-|  bool | [**leftShorted**](classI2C__TPA2016.md#function-leftshorted) () <br>_Returns true if a short circuit occurred on left speaker._  |
-|  bool | [**limiterEnabled**](classI2C__TPA2016.md#function-limiterenabled) () <br> |
-|  float | [**limiterLevel**](classI2C__TPA2016.md#function-limiterlevel) () <br> |
-|  uint8\_t | [**maxGain**](classI2C__TPA2016.md#function-maxgain) () <br> |
-|  bool | [**noiseGateEnabled**](classI2C__TPA2016.md#function-noisegateenabled) () <br> |
-|  TPA2016\_LIMITER\_NOISEGATE | [**noiseGateThreshold**](classI2C__TPA2016.md#function-noisegatethreshold) () <br> |
-|  bool | [**ready**](classI2C__TPA2016.md#function-ready) () <br> |
-|  float | [**releaseTime**](classI2C__TPA2016.md#function-releasetime) () <br> |
-|  void | [**resetShort**](classI2C__TPA2016.md#function-resetshort) (bool right, bool left) <br> |
-|  bool | [**rightEnabled**](classI2C__TPA2016.md#function-rightenabled) () <br> |
-|  bool | [**rightShorted**](classI2C__TPA2016.md#function-rightshorted) () <br>_Returns true if a short circuit occurred on right speaker._  |
-|  void | [**setAttackTime**](classI2C__TPA2016.md#function-setattacktime) (float attack) <br>_Changes the minimum time between gain decreases._  |
-|  void | [**setCompressionRatio**](classI2C__TPA2016.md#function-setcompressionratio) (TPA2016\_COMPRESSION\_RATIO ratio) <br> |
-|  void | [**setGain**](classI2C__TPA2016.md#function-setgain) (int8\_t gain) <br>_Choose fixed gain._  |
-|  void | [**setHoldTime**](classI2C__TPA2016.md#function-setholdtime) (float hold) <br>_Changes the minimum time between a gain decrease (attack) and a gain increase (release)_  |
-|  void | [**setLimiterLevel**](classI2C__TPA2016.md#function-setlimiterlevel) (float limit) <br> |
-|  void | [**setMaxGain**](classI2C__TPA2016.md#function-setmaxgain) (uint8\_t maxGain) <br>_Set maximum gain the amplifier can achieve._  |
-|  void | [**setNoiseGateThreshold**](classI2C__TPA2016.md#function-setnoisegatethreshold) (TPA2016\_LIMITER\_NOISEGATE threshold) <br>_Change activation threshold of Noise Gate function Cannot be called if compression ratio is 1:1._  |
-|  void | [**setReleaseTime**](classI2C__TPA2016.md#function-setreleasetime) (float release) <br>_Changes the minimum time between gain increases._  |
-|  void | [**softwareShutdown**](classI2C__TPA2016.md#function-softwareshutdown) (bool shutdown) <br>_Control bias, oscillator and control functions._  |
-|  bool | [**tooHot**](classI2C__TPA2016.md#function-toohot) () <br>_Returns true if a hardware shutdown due to overheat happened._  |
-|   | [**~I2C\_TPA2016**](classI2C__TPA2016.md#function-i2c-tpa2016) () <br> |
-
-
-
-
-
-
-
+|   | [**I2C\_TPA2016**](#function-i2c-tpa2016) (uint8\_t bus, uint8\_t address=TPA2016\_I2CADDR) <br>_Opens a I2C connection and configure device as a slave._  |
+|  float | [**attackTime**](#function-attacktime) () <br> |
+|  TPA2016\_COMPRESSION\_RATIO | [**compressionRatio**](#function-compressionratio) () <br> |
+|  void | [**disableHoldControl**](#function-disableholdcontrol) () <br>_Set hold time to 0, effectively disabling it._  |
+|  void | [**enableChannels**](#function-enablechannels) (bool right, bool left) <br> |
+|  void | [**enableLimiter**](#function-enablelimiter) (bool limiter) <br>_Control output limiter activation._  |
+|  void | [**enableNoiseGate**](#function-enablenoisegate) (bool noiseGate) <br>_Control noise gate function._  |
+|  int8\_t | [**gain**](#function-gain) () <br> |
+|  bool | [**holdControlEnabled**](#function-holdcontrolenabled) () <br> |
+|  float | [**holdTime**](#function-holdtime) () <br> |
+|  bool | [**leftEnabled**](#function-leftenabled) () <br> |
+|  bool | [**leftShorted**](#function-leftshorted) () <br>_Returns true if a short circuit occurred on left speaker._  |
+|  bool | [**limiterEnabled**](#function-limiterenabled) () <br> |
+|  float | [**limiterLevel**](#function-limiterlevel) () <br> |
+|  uint8\_t | [**maxGain**](#function-maxgain) () <br> |
+|  bool | [**noiseGateEnabled**](#function-noisegateenabled) () <br> |
+|  TPA2016\_LIMITER\_NOISEGATE | [**noiseGateThreshold**](#function-noisegatethreshold) () <br> |
+|  bool | [**ready**](#function-ready) () <br> |
+|  float | [**releaseTime**](#function-releasetime) () <br> |
+|  void | [**resetShort**](#function-resetshort) (bool right, bool left) <br> |
+|  bool | [**rightEnabled**](#function-rightenabled) () <br> |
+|  bool | [**rightShorted**](#function-rightshorted) () <br>_Returns true if a short circuit occurred on right speaker._  |
+|  void | [**setAttackTime**](#function-setattacktime) (float attack) <br>_Changes the minimum time between gain decreases._  |
+|  void | [**setCompressionRatio**](#function-setcompressionratio) (TPA2016\_COMPRESSION\_RATIO ratio) <br> |
+|  void | [**setGain**](#function-setgain) (int8\_t gain) <br>_Choose fixed gain._  |
+|  void | [**setHoldTime**](#function-setholdtime) (float hold) <br>_Changes the minimum time between a gain decrease (attack) and a gain increase (release)_  |
+|  void | [**setLimiterLevel**](#function-setlimiterlevel) (float limit) <br> |
+|  void | [**setMaxGain**](#function-setmaxgain) (uint8\_t maxGain) <br>_Set maximum gain the amplifier can achieve._  |
+|  void | [**setNoiseGateThreshold**](#function-setnoisegatethreshold) (TPA2016\_LIMITER\_NOISEGATE threshold) <br>_Change activation threshold of Noise Gate function Cannot be called if compression ratio is 1:1._  |
+|  void | [**setReleaseTime**](#function-setreleasetime) (float release) <br>_Changes the minimum time between gain increases._  |
+|  void | [**softwareShutdown**](#function-softwareshutdown) (bool shutdown) <br>_Control bias, oscillator and control functions._  |
+|  bool | [**tooHot**](#function-toohot) () <br>_Returns true if a hardware shutdown due to overheat happened._  |
+|   | [**~I2C\_TPA2016**](#function-i2c-tpa2016) () <br> |
 
 ## Public Functions Documentation
 
-
 ### <a href="#function-i2c-tpa2016" id="function-i2c-tpa2016">function I2C\_TPA2016 </a>
-
 
 ```cpp
 I2C_TPA2016::I2C_TPA2016 (
@@ -70,8 +61,6 @@ I2C_TPA2016::I2C_TPA2016 (
     uint8_t address=TPA2016_I2CADDR
 )
 ```
-
-
 
 
 **Parameters:**
