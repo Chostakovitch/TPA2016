@@ -118,3 +118,5 @@ int main(int argc, char const *argv[]) {
 ```
 
 The complete API reference can be found [in the documentation](doc/api.md).
+
+**Warning** : Register writes persist until power turns off. So, if you disable a channel and forget to enable it again, you could think the amplifier is broken. It is therefore a better idea to explicitly set the register values when running your program.
