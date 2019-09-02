@@ -113,6 +113,15 @@ public:
 	I2C_TPA2016(uint8_t bus, uint8_t address = TPA2016_I2CADDR);
 	~I2C_TPA2016();
 
+	/**
+	 * Helper which choose parameters to get a standard, smooth sound
+	 */
+	void softMode();
+	/**
+	 * Helper which push the amplifier to its maximum
+	 */
+	void hardcoreMode();
+
 	// Register 1
 	void enableChannels(bool right, bool left);
 	bool rightEnabled();

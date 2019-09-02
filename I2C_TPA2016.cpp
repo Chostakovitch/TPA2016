@@ -45,6 +45,30 @@ I2C_TPA2016::~I2C_TPA2016() {
 	}
 }
 
+void I2C_TPA2016::softMode() {
+	setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_1);
+	// Recommended pop paramters (section 9.4.2)
+	setAttackTime(2.56f);
+	setReleaseTime(3.288f);
+	setHoldTime(0.0137f);
+
+	enableLimiter(true);
+	setLimiterLevel(6.5f);
+
+	// We consider that the input uses full range, so a gain > 0 will saturate
+	setMaxGain(6);
+	setGain(0);
+}
+
+void I2C_TPA2016::hardcoreMode() {
+	setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_8);
+	enableLimiter(true);
+	setLimiterLevel(9.0f);
+	setReleaseTime(0.1644f);
+	setMaxGain(30);
+	setGain(30);
+}
+
 void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
 	if(i2c_smbus_write_byte_data(fd, regAddress, value) < 0)
 	{
