@@ -99,6 +99,8 @@ $ make test_defaults
 
 Import `I2C_TPA2016.h` in your program. Compile with `-ltpa2016` flag or add it to your Makefile `LDFLAGS` variable.
 
+**Warning** : in the past, all smbus calls were defined in headers, but newer versions are in a shared library. You may have to compile your program with `-li2c` flag.
+
 Sample usage :
 ```c++
 #include <I2C_TPA2016.h>
