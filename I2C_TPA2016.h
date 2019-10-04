@@ -24,16 +24,15 @@
 #define I2CTPA2016_H_
 
 #include <iostream>
-
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
 
 // See here why : https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=798409
 #if __has_include(<i2c/smbus.h>)
 #include <i2c/smbus.h>
-#else
-#include <linux/i2c-dev.h>
 #endif
 
 #define MAX_BUF_NAME 64
