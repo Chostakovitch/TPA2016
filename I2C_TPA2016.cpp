@@ -56,7 +56,7 @@ void I2C_TPA2016::softMode() {
 	setLimiterLevel(6.5f);
 
 	// We consider that the input uses full range, so a gain > 0 will saturate
-	setMaxGain(6);
+	setMaxGain(18);
 	setGain(0);
 }
 
