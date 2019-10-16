@@ -55,18 +55,16 @@ void I2C_TPA2016::softMode() {
 	enableLimiter(true);
 	setLimiterLevel(6.5f);
 
-	// We consider that the input uses full range, so a gain > 0 will saturate
 	setMaxGain(18);
 	setGain(0);
 }
 
 void I2C_TPA2016::hardcoreMode() {
-	setCompressionRatio(TPA2016_COMPRESSION_RATIO::_1_8);
 	enableLimiter(true);
 	setLimiterLevel(9.0f);
 	setReleaseTime(0.1644f);
 	setMaxGain(30);
-	setGain(30);
+	setGain(10);
 }
 
 void I2C_TPA2016::writeI2C(uint8_t regAddress, uint8_t value) {
